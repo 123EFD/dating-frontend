@@ -21,10 +21,10 @@ app.add_middleware(
 # 2. WAKE UP THE MODELS
 # ==========================================
 # Load the exported pipeline components from Google Colab
-model = joblib.load("models/xgboost_model.pkl")
-scaler = joblib.load("models/scaler.pkl")
-feat_encoder = joblib.load("models/feature_encoder.pkl")
-target_encoder = joblib.load("models/target_encoder.pkl")
+model = joblib.load("backend/models/xgboost_model.pkl")
+scaler = joblib.load("backend/models/scaler.pkl")
+feat_encoder = joblib.load("backend/models/feature_encoder.pkl")
+target_encoder = joblib.load("backend/models/target_encoder.pkl")
 
 # ==========================================
 # 3. THE 40 EXPECTED COLUMNS
