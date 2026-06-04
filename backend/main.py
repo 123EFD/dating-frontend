@@ -2,8 +2,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import joblib
 import pandas as pd
+import os
 
 app = FastAPI()
+
+# 1. Get the absolute directory where main.py itself lives
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # ==========================================
 # 1. SECURITY & CORS SETTINGS
@@ -21,10 +25,15 @@ app.add_middleware(
 # 2. WAKE UP THE MODELS
 # ==========================================
 # Load the exported pipeline components from Google Colab
-model = joblib.load("backend/models/xgboost_model.pkl")
-scaler = joblib.load("backend/models/scaler.pkl")
-feat_encoder = joblib.load("backend/models/feature_encoder.pkl")
-target_encoder = joblib.load("backend/models/target_encoder.pkl")
+FEATURE_ENCODER_PATH = os.path.join(BASE_DIR, "models", "feature_encoder.pkl")
+SCALER_PATH = os.path.join(BASE_DIR, "models", "scaler.pkl")
+TARGET_ENCODER_PATH = os.path.join(BASE_DIR, "models", "target_encoder.pkl")
+XGBOOST_MODEL_PATH = os.path.join(BASE_DIR, "models", "xgboost_model.pkl")
+
+feature_encoder = joblib.load(FEATURE_ENCODER_PATH)
+scaler = joblib.load(SCALER_PATH)
+target_encoder = joblib.load(TARGET_ENCODER_PATH)
+model = joblib.load(XGBOOST_MODEL_PATH)
 
 # ==========================================
 # 3. THE 40 EXPECTED COLUMNS
@@ -73,7 +82,7 @@ def predict_archetype(data: dict):
         if col in EXPECTED_COLUMNS: 
             try:
                 # Transform the word using the Colab encoder memory
-                df_input[col] = feat_encoder.transform(df_input[col].astype(str))
+                df_input[col] = feature_encoder.transform(df_input[col].astype(str))
             except ValueError:
                 # If the app sends a brand new word we've never seen, default to 0
                 df_input[col] = 0 
